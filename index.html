@@ -1,72 +1,129 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DuoSabor - Cardápio</title>
+<meta charset="UTF-8">
+<title>Cardápio DuoSabor</title>
 <style>
-body { font-family: Arial; background:#f7f3e9; margin:0; padding:20px; }
-header img { width:160px; border-radius:12px; display:block; margin:auto; }
-.card { background:white; padding:15px; margin:10px 0; border-radius:10px; }
-button { padding:10px 15px; border:none; background:#c48a3a; color:white; border-radius:8px; cursor:pointer; }
-#cart { position:fixed; bottom:20px; right:20px; background:#c48a3a; color:white; padding:12px 16px; border-radius:50px; }
+    body {
+        font-family: Arial, sans-serif;
+        background: #fff7e6;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    header {
+        background: #ff3d00;
+        color: white;
+        padding: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .card {
+        background: white;
+        width: 90%;
+        max-width: 450px;
+        margin: 15px auto;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px #0002;
+        text-align: left;
+    }
+    button {
+        width: 90%;
+        background: #ff3d00;
+        color: white;
+        padding: 15px;
+        font-size: 18px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    label { font-weight: bold; }
 </style>
 </head>
 <body>
 
-<header>
-<h2 style="text-align:center;">DuoSabor • Coroaci</h2>
-<img src="ninho_morango.jpg" />
-<p style="text-align:center;">@Duosabor.coroaci_</p>
-</header>
+<header>🍕 DuoSabor - Faça Seu Pedido!</header>
 
-<h2>Cardápio</h2>
+<div class="card">
+    <h3>Escolha os Sabores</h3>
 
-<div id="items"></div>
+    <label>Escolha 1º sabor</label><br>
+    <select id="sabor1">
+        <option>Calabresa</option>
+        <option>Frango com Catupiry</option>
+        <option>Portuguesa</option>
+        <option>4 Queijos</option>
+    </select><br><br>
 
-<a id="cart" href="#">Carrinho (0)</a>
+    <label>Escolha 2º sabor</label><br>
+    <select id="sabor2">
+        <option>Calabresa</option>
+        <option>Frango com Catupiry</option>
+        <option>Portuguesa</option>
+        <option>4 Queijos</option>
+    </select><br><br>
+
+    <label>Quantidade</label><br>
+    <input type="number" id="qtd" min="1" value="1"><br><br>
+
+    <label>Preço da Pizza</label><br>
+    <select id="preco">
+        <option value="30">R$ 30,00 — Média</option>
+        <option value="40">R$ 40,00 — Grande</option>
+        <option value="55">R$ 55,00 — Família</option>
+    </select>
+</div>
+
+<div class="card">
+    <h3>Dados do Cliente</h3>
+
+    <input type="text" id="nome" placeholder="Nome do cliente" style="width:100%;"><br><br>
+
+    <input type="text" id="endereco" placeholder="Endereço" style="width:100%;"><br><br>
+
+    <label>Forma de pagamento:</label><br>
+    <select id="pagamento" style="width:100%;">
+        <option>Pix</option>
+        <option>Dinheiro</option>
+        <option>Cartão</option>
+    </select>
+</div>
+
+<button onclick="enviar()">📲 Enviar Pedido pelo WhatsApp</button>
 
 <script>
-const produtos = [
- {nome:"Ninho com morango", preco:12},
- {nome:"Ninho com maracujá", preco:12},
- {nome:"Limão", preco:12},
- {nome:"Choconinho", preco:12},
- {nome:"Prestígio", preco:12},
- {nome:"Churros", preco:12},
- {nome:"Chocolate", preco:12},
- {nome:"Cenoura", preco:12},
- {nome:"Doce de leite 330g", preco:15},
- {nome:"Doce de leite 660g", preco:30}
-];
+function enviar() {
+    let sabor1 = document.getElementById("sabor1").value;
+    let sabor2 = document.getElementById("sabor2").value;
+    let qtd = parseInt(document.getElementById("qtd").value);
+    let preco = parseInt(document.getElementById("preco").value);
 
-let carrinho = [];
+    let nome = document.getElementById("nome").value;
+    let endereco = document.getElementById("endereco").value;
+    let pagamento = document.getElementById("pagamento").value;
 
-function render(){
- document.getElementById("items").innerHTML =
-   produtos.map((p,i)=>`
-     <div class='card'>
-        <b>${p.nome}</b><br>
-        R$ ${p.preco}
-        <br><br>
-        <button onclick="add(${i})">Adicionar</button>
-     </div>`).join("");
+    if (!nome || !endereco) {
+        alert("Preencha Nome e Endereço!");
+        return;
+    }
 
- document.getElementById("cart").innerText = "Carrinho ("+carrinho.length+")";
- document.getElementById("cart").href =
-     "https://wa.me/?text=" + encodeURIComponent(
-        "Pedido DuoSabor:%0A" +
-        carrinho.map(c=>"- "+c).join("%0A")
-     );
+    let total = qtd * preco;
+
+    let msg =
+`📌 *Pedido DuoSabor*
+🍕 Sabores: ${sabor1} + ${sabor2}
+🔢 Quantidade: ${qtd}
+💰 Total: R$ ${total},00
+
+👤 Cliente: ${nome}
+📍 Endereço: ${endereco}
+💳 Pagamento: ${pagamento}`;
+
+    let url = "https://wa.me/5533984553145?text=" + encodeURIComponent(msg);
+    window.open(url, "_blank");
 }
-
-function add(i){
- carrinho.push(produtos[i].nome + " - R$" + produtos[i].preco);
- render();
-}
-
-render();
 </script>
 
 </body>
